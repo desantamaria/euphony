@@ -1,18 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
-  useEffect(() => {}, []);
+  //   const { data: session } = useSession();
+  //   console.log(session);
 
   return (
-    <div className="h-screen w-screen flex flex-col justify-center items-center">
-      <Button className="bg-green-500 hover:bg-green-600">
-        Log in with Spotify
-      </Button>
-    </div>
+    <div className="h-screen w-screen flex flex-col justify-center items-center"></div>
   );
 }
