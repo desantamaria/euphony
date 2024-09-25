@@ -1,8 +1,6 @@
-import NextAuth, { AuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify"
-import { JWT } from "next-auth/jwt";
 import { Buffer } from 'buffer';
-import { Session, User } from "next-auth";
 
 const scopes = [
     "user-read-email",
@@ -18,15 +16,15 @@ let params = {
 
 const LOGIN_URL = "https://accounts.spotify.com/authorize?" + new URLSearchParams(params).toString();
 
-async function refreshAccessToken(token: JWT): Promise<JWT> {
+async function refreshAccessToken(token) {
     const params = new URLSearchParams();
     params.append("grant_type", "refresh_token")
-    params.append("refresh_token", token.refreshToken as string)
+    params.append("refresh_token", token.refreshToken)
     const response = await fetch('https://accounts.spotify.com/api/token', {
         method: "POST",
         headers: {
             'content-type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + Buffer.from(process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_SECRET).toString('base64')
+            'Authorization': 'Basic ' + (new Buffer.from(process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_SECRET).toString('base64'))
           },
     }); 
     const data = await response.json();
@@ -37,25 +35,25 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
     }
 }
 
-export const authOptions: AuthOptions = {
+export const authOptions = {
   providers: [
     SpotifyProvider({
-      clientId: process.env.SPOTIFY_CLIENT_ID as string,
-      clientSecret: process.env.SPOTIFY_SECRET as string,
-      authorization: LOGIN_URL as string,
+      clientId: process.env.SPOTIFY_CLIENT_ID,
+      clientSecret: process.env.SPOTIFY_SECRET,
+      authorization: LOGIN_URL,
     }),
   ],
-  secret: process.env.JWT_SECRET as string,
+  secret: process.env.JWT_SECRET,
   pages: {
     signIn: "/login"
   },
   callbacks: {
-    async jwt({ token, account }: { token: JWT; account?: any }) {
+    async jwt({ token, account }) {
       // Persist the OAuth access_token to the token right after signin
       if (account) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
-        token.accessTokenExpires = account.expires_at as number;
+        token.accessTokenExpires = account.expires_at;
         return token
       }
 
@@ -69,9 +67,9 @@ export const authOptions: AuthOptions = {
 
       return token
     },
-    async session({ session, token, user }: { session: Session; token: JWT, user: User }) {
+    async session({ session, token, user }) {
       // Send properties to the client, like an access_token from a provider.
-      session.accessToken = token.accessToken as string;
+      session.accessToken = token.accessToken;
       return session
     }
   }
