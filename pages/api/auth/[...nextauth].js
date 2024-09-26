@@ -3,11 +3,11 @@ import SpotifyProvider from "next-auth/providers/spotify"
 import { Buffer } from 'buffer';
 
 const scopes = [
-    "user-read-email",
-    "playlist-read-private",
-    "playlist-read-collaborative",
-    "user-read-currently-playing",
-    "user-modify-playback-state"
+   "user-read-email",
+  "playlist-read-private",
+  "playlist-read-collaborative",
+  "user-read-currently-playing",
+  "user-modify-playback-state"
 ].join(",")
 
 let params = {
@@ -44,6 +44,7 @@ export const authOptions = {
     }),
   ],
   secret: process.env.JWT_SECRET,
+  debug: true,
   pages: {
     signIn: "/login"
   },
@@ -64,8 +65,6 @@ export const authOptions = {
 
       // acess token expired
       return refreshAccessToken(token)
-
-      return token
     },
     async session({ session, token, user }) {
       // Send properties to the client, like an access_token from a provider.
